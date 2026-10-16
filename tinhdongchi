@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>🔥 TEST TÌNH ANH EM 🔥</title></head>
+<body style="
+  margin:0; min-height:100vh;
+  background:linear-gradient(45deg,#0f0c29,#302b63,#24243e);
+  color:white; font-family:Arial;
+  display:flex; justify-content:center; align-items:center;
+">
+  <div style="max-width:500px; width:100%; padding:25px; text-align:center;">
+
+    <!-- MÀN 0: NHẬP TÊN -->
+    <div id="man0">
+      <h1 style="font-size:34px;">🔥 TEST TÌNH ANH EM 🔥</h1>
+      <p style="font-size:18px; color:#aaa;">AI sẽ chấm điểm tình anh em<br>của bạn là "THẬT" hay "GIẢ" 😏</p>
+      <input id="tennguoidung" placeholder="Nhập tên của bạn đây..." style="
+        font-size:20px; padding:15px; margin-top:25px;
+        width:80%; border:2px solid gold; border-radius:50px;
+        background:rgba(255,255,255,0.1); color:white; text-align:center; outline:none;">
+      <br>
+      <button onclick="batdau()" style="
+        font-size:22px; padding:16px 60px; margin-top:20px;
+        border:none; border-radius:50px; background:gold;
+        font-weight:bold; cursor:pointer;">BẮT ĐẦU 🚀</button>
+    </div>
+
+    <!-- MÀN 1: CÂU HỎI -->
+    <div id="man1" style="display:none;">
+      <p style="color:gold;">Câu <span id="socau">1</span>/10</p>
+      <h2 id="cauhoi" style="font-size:24px; min-height:80px;"></h2>
+      <div id="luachon"></div>
+      <div style="height:8px; background:#333; border-radius:10px; margin-top:25px;">
+        <div id="thanh" style="height:8px; width:10%; background:gold; border-radius:10px; transition:0.3s;"></div>
+      </div>
+    </div>
+
+    <!-- MÀN 2: KẾT QUẢ + TỔNG KẾT -->
+    <div id="man2" style="display:none;">
+      <p style="color:#aaa; font-size:16px;">Kết quả của: <b id="tentongket" style="color:white; font-size:20px;"></b></p>
+      <div style="font-size:80px;" id="emoji"></div>
+      <h1 id="daihieu" style="font-size:28px; margin:5px 0;"></h1>
+      <p style="font-size:56px; font-weight:bold; color:gold; margin:5px 0;" id="diemso"></p>
+      <p id="binhluan" style="font-size:17px; line-height:1.6;"></p>
+
+      <h3 style="color:gold; margin-top:30px;">📋 CHI TIẾT TRẢ LỜI</h3>
+      <div id="tongket" style="text-align:left; font-size:14px; line-height:1.7;
+        background:rgba(0,0,0,0.3); border-radius:14px; padding:15px;"></div>
+
+      <button onclick="copyKetQua()" style="
+        font-size:18px; padding:15px 40px; margin-top:20px;
+        border:none; border-radius:50px; background:limegreen;
+        font-weight:bold; cursor:pointer; color:white;">📋 Copy kết quả gửi lại</button>
+      <br>
+      <button onclick="location.reload()" style="
+        font-size:15px; padding:12px 35px; margin-top:12px;
+        border:none; border-radius:50px; background:#555;
+        color:white; cursor:pointer;">Test lại 🔁</button>
+    </div>
+
+  </div>
+
+<script>
+const cauHoi = [
+  { q: "3h sáng TAO gọi MÀY đòi tiền. Mày:", c: ["Chuyển liền không hỏi gì 😤", "Hỏi cần bao nhiêu rồi chuyển", "Tắt điện thoại, mai tính 😴"] },
+  { q: "TAO đánh nhau với đứa khác. Mày:", c: ["Xông vào đánh cùng 👊", "Giữ tao lại + hòa giải", "Quay video đăng story 📱"] },
+  { q: "TAO đói, ví MÀY còn đúng 20k. Mày:", c: ["Mời tao ăn hết 20k 🍜", "Ăn chung 2 phần", "Tao ăn trước đã 😋"] },
+  { q: "TAO lỡ nói bí mật của MÀY cho cả nhóm. Mày:", c: ["Bỏ qua, anh em mà 🙏", "Giận một lát rồi thôi", "Chê tao nhỏ nhen + trả đũa 😑"] },
+  { q: "TAO thất tình, gọi MÀY lúc nửa đêm. Mày:", c: ["Ngồi uống với tao đến sáng 🍻", "An ủi + hẹn đi chơi", "Gửi sticker 'phê quá ha' 💀"] },
+  { q: "MÀY trúng số 10 tỷ. Mày chia tao:", c: ["1 tỷ! Anh em mà 💰", "500 triệu, cũng nhiều đó", "Mời bữa lẩu thui 🍲"] },
+  { q: "Laptop TAO hỏng giữa deadline. Mày:", c: ["Cho tao mượn máy của mày 💻", "Giúp tìm chỗ sửa gấp", "Hú cái 'xui vậy bro' 💀"] },
+  { q: "Mẹ TAO hỏi mày: 'Nó có hay nhậu không?'. Mày:", c: ["Bảo vệ tao hết mức 🛡️", "Kể thật nhưng giảm nhẹ", "Kể hết, thêm mắm thêm muối 😂"] },
+  { q: "TAO nói sai gì đó, cả nhóm cười. Mày:", c: ["Cười cùng rồi chuyển đề tài 😄", "Bênh tao: 'thôi đủ rồi'", "Cười TO nhất nhóm 🔊"] },
+  { q: "Tình anh em là gì theo MÀY?", c: ["Không cần nói vẫn hiểu 🤝", "Sẵn sàng vì nhau lúc cần", "Nhậu chung là anh em 🍻"] }
+];
+
+let i = 0, diem = 0;
+let ten = "";
+const luaChonDaChon = [];   // lưu (câu, đáp án, loại) để tổng kết
+
+function batdau() {
+  ten = tennguoidung.value.trim();
+  if (!ten) { tennguoidung.style.borderColor = 'red'; tennguoidung.placeholder = "Chưa có tên là không chơi đâu 😤"; return; }
+  man0.style.display = 'none';
+  man1.style.display = 'block';
+  hien();
+}
+
+function hien() {
+  socau.textContent = i + 1;
+  cauhoi.textContent = cauHoi[i].q;
+  luachon.innerHTML = '';
+  cauHoi[i].c.forEach((chon, k) => {
+    const b = document.createElement('button');
+    b.textContent = chon;
+    b.style.cssText = `
+      display:block; width:100%; margin:12px 0; padding:16px;
+      font-size:16px; border:2px solid #555; border-radius:14px;
+      background:rgba(255,255,255,0.08); color:white;
+      cursor:pointer; text-align:left; font-family:Arial;`;
+    b.onmouseover = () => b.style.borderColor = 'gold';
+    b.onmouseout = () => b.style.borderColor = '#555';
+    b.onclick = () => cham(k);
+    luachon.appendChild(b);
+  });
+  thanh.style.width = ((i + 1) * 10) + '%';
+}
+
+function cham(k) {
+  diem += (k === 0 ? 10 : k === 1 ? 6 : 2);
+  luaChonDaChon.push({
+    cau: cauHoi[i].q,
+    traLoi: cauHoi[i].c[k],
+    loai: k   // 0=hiệp sĩ, 1=ổn, 2=hại bro
+  });
+  i++;
+  if (i < 10) hien(); else ketQua();
+}
+
+function ketQua() {
+  man1.style.display = 'none';
+  man2.style.display = 'block';
+  tentongket.textContent = ten;
+  diemso.textContent = diem + "/100";
+
+  if (diem >= 90) {
+    emoji.textContent = "👑";
+    daihieu.textContent = "ANH EM RUỘT THẬT SỰ";
+    binhluan.textContent = "Sẵn sàng cạn ly, sẵn sàng chia muối. Giữ người này lại bro, hiếm lắm! 🍻";
+  } else if (diem >= 70) {
+    emoji.textContent = "🤝";
+    daihieu.textContent = "ANH EM TỐT, CÓ LÚC LƯỜI";
+    binhluan.textContent = "Điểm khá cao đó! Cần thì có mặt, có mỗi lúc 3h sáng là hơi khó tìm 😆";
+  } else if (diem >= 50) {
+    emoji.textContent = "😐";
+    daihieu.textContent = "ANH EM... PHONG CÁCH TỰ DO";
+    binhluan.textContent = "Có cũng được, không có cũng... thôi. Nhưng lúc nguy hiểm nhớ tự xoay xở nha 📱";
+  } else if (diem >= 30) {
+    emoji.textContent = "💀";
+    daihieu.textContent = "ANH EM KIỂU 'TỪNG BIẾT'";
+    binhluan.textContent = "Nghe đồn từng gặp nhau ở đâu đó... Chắc vậy 😂";
+  } else {
+    emoji.textContent = "🚬";
+    daihieu.textContent = "ANH EM GIẢ TRỌN KIẾP";
+    binhluan.textContent = "Người này cần được gửi lại link quiz để tự nhìn nhận bản thân 💀 Cảm ơn vì đã trung thực!";
+  }
+
+  // Tổng kết chi tiết từng câu
+  const icon = ["🥇", "🥈", "🥉"];
+  tongket.innerHTML = luaChonDaChon.map((item, idx) =>
+    `<p style="margin:10px 0;"><b style="color:gold;">Câu ${idx + 1}:</b> ${item.cau}<br>
+     ${icon[item.loai]} <span style="color:${item.loai === 0 ? 'limegreen' : item.loai === 1 ? 'orange' : 'tomato'}">${item.traLoi}</span></p>`
+  ).join('');
+
+  if (navigator.vibrate) navigator.vibrate([100,50,100]);
+}
+
+function copyKetQua() {
+  const icon = ["🥇", "🥈", "🥉"];
+  const vanBan = `🔥 KẾT QUẢ TEST TÌNH ANH EM 🔥
+👤 Tên: ${ten}
+ ${emoji.textContent} Danh hiệu: ${daihieu.textContent}
+💯 Điểm: ${diemso.textContent}
+
+ ${luaChonDaChon.map((item, idx) =>
+  `Câu ${idx + 1}: ${item.cau}\n→ ${icon[item.loai]} ${item.traLoi}`
+).join('\n')}`;
+
+  // Copy vào clipboard (hỗ trợ cả máy cũ)
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(vanBan).then(() => alert("✅ Đã copy! Dán gửi lại cho người test bạn đi 😏"));
+  } else {
+    const t = document.createElement('textarea');
+    t.value = vanBan; document.body.appendChild(t);
+    t.select(); document.execCommand('copy'); t.remove();
+    alert("✅ Đã copy! Dán gửi lại cho người test bạn đi 😏");
+  }
+}
+</script>
+</body>
+</html>
